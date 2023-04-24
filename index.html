@@ -141,18 +141,28 @@
                 blueScore: 0,
                 cards: [],
                 spyMode: false,
-                init: function() {
-                    this.cards = [
-                        { word: "apple", team: "red", selected: false },
-                        { word: "banana", team: "blue", selected: false },
-                        { word: "cat", team: "red", selected: false },
-                        { word: "dog", team: "blue", selected: false },
-                        { word: "elephant", team: "red", selected: false },
-                        { word: "frog", team: "blue", selected: false },
-                        { word: "giraffe", team: "neutral", selected: false },
-                        { word: "horse", team: "neutral", selected: false }
-                    ];
-                    this.render();
+        init: function() {
+            this.cards = [
+                { word: "apple", team: "red", selected: false },
+                { word: "banana", team: "blue", selected: false },
+                { word: "cat", team: "red", selected: false },
+                { word: "dog", team: "blue", selected: false },
+                { word: "elephant", team: "red", selected: false },
+                { word: "frog", team: "blue", selected: false },
+                { word: "giraffe", team: "neutral", selected: false },
+                { word: "horse", team: "neutral", selected: false }
+            ];
+
+            this.shuffleArray(this.cards);
+            this.render();
+        },
+
+        shuffleArray: function(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+
                 },
                 render: function() {
                     const gameBoard = document.getElementById("game-board");
