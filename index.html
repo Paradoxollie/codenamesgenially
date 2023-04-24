@@ -4,8 +4,7 @@
         <title>Codenames</title>
         <meta charset="UTF-8">
         <style>
-            /* Styles.css content */
-            /* Add the content of styles.css here */
+            /* Styles */
             @import url('https://fonts.googleapis.com/css2?family=Muli:wght@400;700&display=swap');
 
             * {
@@ -124,7 +123,6 @@
                 background-color: gray !important;
                 color: #F5F5F5;
             }
-
             .deathCard {
                 border-color: #2B2D2F;
                 background-color: #2B2D2F;
@@ -136,24 +134,46 @@
             }
         </style>
         <script>
-            // main.js content
-            // Add the content of main.js here
+            // Main functionality
             const game = {
                 currentTurn: 'red',
                 redScore: 0,
                 blueScore: 0,
                 cards: [],
-               init: function() {
-    this.cards = [
-        { word: "apple", team: "red", selected: false },
-        { word: "banana", team: "blue", selected: false },
-        { word: "cat", team: "red", selected: false },
-        { word: "dog", team: "blue", selected: false },
-        { word: "elephant", team: "red", selected: false },
-        { word: "frog", team: "blue", selected: false },
-        { word: "giraffe", team: "neutral", selected: false },
-        { word: "horse", team: "neutral", selected: false }
-    ];
+                spyMode: false,
+                init: function() {
+                    this.cards = [
+                        { word: "apple", team: "red", selected: false },
+                        { word: "banana", team: "blue", selected: false },
+                        { word: "cat", team: "red", selected: false },
+                        { word: "dog", team: "blue", selected: false },
+                        { word: "elephant", team: "red", selected: false },
+                        { word: "frog", team: "blue", selected: false },
+                        { word: "giraffe", team: "neutral", selected: false },
+                        { word: "horse", team: "neutral", selected: false }
+                    ];
+                    this.render();
+                },
+                render: function() {
+                    const gameBoard = document.getElementById("game-board");
+                    gameBoard.innerHTML = '';
+                    for (let i = 0; i < this.cards.length; i++) {
+                        const card = this.cards[i];
+                        const cardElement = document.createElement("button");
+                        cardElement.classList.add("card");
+                        cardElement.classList.add("card-button");
+                        cardElement.textContent = card.word;
+                        cardElement.setAttribute("id", "card" + i);
+                        cardElement.onclick = function() {
+                            game.cardClicked(i);
+                        };
+                        if (this.spyMode) {
+                            cardElement.classList.add(card.team + "Card");
+                        }
+                        gameBoard.appendChild(cardElement);
+                    }
+                    this.updateTurnDisplay();
+                    this.updateScoreDisplay();
                 },
                 toggleTurn: function() {
                     this.currentTurn = this.currentTurn === 'red' ? 'blue' : 'red';
@@ -177,48 +197,51 @@
                     cardElement.classList.add(card.team + "Card");
                     cardElement.classList.add("selectedCard");
                     if (card.team === this.currentTurn) {
-                        this[currentTurn + "Score"]++;
+                        this[this.currentTurn + "Score"]++;
                         this.updateScoreDisplay();
                     } else {
                         this.toggleTurn();
                     }
+                },
+                toggleSpyMode: function() {
+                    this.spyMode = !this.spyMode;
+                    this.render();
                 }
             };
 
             game.init();
 
             document.addEventListener("DOMContentLoaded", function() {
-                for (let i = 0; i < game.cards.length; i++) {
-                    const card = game.cards[i];
-                    const cardElement = document.createElement("button");
-                    cardElement.classList.add("card");
-                    cardElement.classList.add("card-button");
-                    cardElement.textContent = card.word;
-                    cardElement.setAttribute("id", "card" + i);
-                    cardElement.onclick = function() {
-                        game.cardClicked(i);
-                    };
-                    document.getElementById("game-board").appendChild(cardElement);
-                }
-                game.updateTurnDisplay();
-                game.updateScoreDisplay();
+                game.render();
             });
+
+            function resetGame() {
+                game.init();
+            }
+            function endTurn() {
+                game.toggleTurn();
+            }
+
+            function spyMode() {
+                game.toggleSpyMode();
+            }
         </script>
     </head>
     <body>
         <div id="game-view">
+            <h1>Codenames</h1>
             <div id="game-nav">
-                <h1>Codenames</h1>
-                <span id="currentTurn" class="redTurn"></span>
-            </div>
-            <div id="score">
-                <span id="redScore">RED: 0</span> | <span id="blueScore">BLUE: 0</span>
+                <div id="score">
+                    <span id="redScore">RED: 0</span> | <span id="blueScore">BLUE: 0</span>
+                </div>
+                <div id="bottom-nav">
+                    <button class="button-game-control" onclick="resetGame()">Reset Game</button>
+                    <button class="button-game-control" onclick="endTurn()">End Turn</button>
+                    <button class="button-game-control" onclick="spyMode()">Spy Mode</button>
+                </div>
             </div>
             <div id="game-board"></div>
-            <div id="bottom-nav">
-                <button id="resetBtn" class="button-game-control" onclick="game.init()">Reset</button>
-                <button id="endTurnBtn" class="button-game-control" onclick="game.toggleTurn()">End Turn</button>
-            </div>
+            <div id="currentTurn" class="redTurn">RED'S TURN</div>
         </div>
     </body>
 </html>
