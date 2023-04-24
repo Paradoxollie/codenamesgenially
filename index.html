@@ -484,20 +484,21 @@ Zombie
           type: ''
         };
 
-        if (index < 9) {
-          card.type = 'blue';
-        } else if (index < 18) {
-          card.type = 'red';
-        } else if (index < 23) {
-          card.type = 'yellow';
-        } else {
-          card.type = 'black';
-        }
-
         return card;
       });
 
-      return deck.sort(() => Math.random() - 0.5);
+      let cardTypes = ['blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue',
+                      'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red',
+                      'yellow', 'yellow', 'yellow', 'yellow', 'yellow',
+                      'black', 'black'];
+
+      cardTypes = cardTypes.sort(() => Math.random() - 0.5);
+      
+      for (let i = 0; i < deck.length; i++) {
+        deck[i].type = cardTypes[i];
+      }
+
+      return deck;
     }
 
     function renderGameBoard(cards, showColors = false) {
@@ -514,7 +515,7 @@ Zombie
           cardElement.classList.add(card.type);
         };
 
-        if (showColors) {
+        if (showColors && showSpyMode) {
           cardElement.classList.add(card.type);
         }
 
