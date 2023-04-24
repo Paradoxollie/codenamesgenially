@@ -3,93 +3,475 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Codenames Game</title>
+  <title>Codenames Duet</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-image: linear-gradient(135deg, #7f7fd5, #86a8e7, #91eae4);
-      background-size: 400% 400%;
-      animation: gradientBackground 10s ease infinite;
-      text-align: center;
+      background-color: #f0f0f0;
     }
 
-    @keyframes gradientBackground {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .board {
+    .game-board {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(5, 1fr);
       grid-gap: 10px;
-      width: 80%;
-      margin: 0 auto;
-      margin-top: 50px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      border-radius: 10px;
-      padding: 20px;
-      background-color: #ffffff;
+      width: 600px;
+      margin: 20px auto;
     }
 
     .card {
-      background-color: #f1f1f1;
-      padding: 20px;
-      text-align: center;
+      background-color: #fff;
+      border-radius: 4px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       cursor: pointer;
-      user-select: none;
-      height: 80px;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s ease;
+      height: 100px;
+      font-size: 18px;
+      font-weight: bold;
+      position: relative;
+      transition: transform 0.2s;
     }
 
     .card:hover {
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      transform: translateY(-5px);
+      transform: translateY(-4px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
     }
 
     .card.revealed {
+      cursor: default;
+      transform: none;
       box-shadow: none;
-      transform: translateY(0);
     }
 
-    .red {
-      background-color: #f1f1f1;
-      color: red;
+    .card.red {
+      background-color: #f00;
     }
 
-    .blue {
-      background-color: #f1f1f1;
-      color: blue;
+    .card.blue {
+      background-color: #00f;
     }
 
-    .neutral {
-      background-color: #f1f1f1;
-      color: gray;
+    .card.neutral {
+      background-color: #ccc;
     }
 
-    .black {
-      background-color: #f1f1f1;
-      color: black;
+    .card.black {
+      background-color: #000;
     }
   </style>
 </head>
 <body>
-  <div class="board" id="gameBoard">
-    <!-- Game board cells will be appended here -->
-  </div>
-  <button onclick="newGame()">New Game</button>
-  <button onclick="toggleSpyMode()">Toggle Spy Mode</button>
-
+  <div id="game-board" class="game-board"></div>
+  <button id="toggle-spy">Toggle Spy Mode</button>
   <script>
     const words = [
-[ "AFRICA", "AGENT", "AIR", "ALIEN", "ALPS", "AMAZON", "AMBULANCE", "AMERICA", "ANGEL", "ANTARCTICA", "APPLE", "ARM", "ATLANTIS", "AUSTRALIA", "AZTEC", "BACK", "BALL", "BAND", "BANK", "BAR", "BARK", "BAT", "BATTERY", "BEACH", "BEAR", "BEAT", "BED", "BEIJING", "BELL", "BELT", "BERLIN", "BERMUDA", "BERRY", "BILL", "BLOCK", "BOARD", "BOLT", "BOMB", "BOND", "BOOM", "BOOT", "BOTTLE", "BOW", "BOX", "BRIDGE", "BRUSH", "BUCK", "BUFFALO", "BUG", "BUGLE", "BUTTON", "CALF", "CANADA", "CAP", "CAPITAL", "CAR", "CARD", "CARROT", "CASINO", "CAST", "CAT", "CELL", "CENTAUR", "CENTER", "CHAIR", "CHANGE", "CHARGE", "CHECK", "CHEST", "CHICK", "CHINA", "CHOCOLATE", "CHURCH", "CIRCLE", "CLIFF", "CLOAK", "CLUB", "CODE", "COLD", "COMIC","COMPOUND", "CONCERT", "CONDUCTOR", "CONTRACT", "COOK", "COPPER", "COTTON", "COURT", "COVER", "CRANE", "CRASH", "CRICKET", "CROSS", "CROWN", "CYCLE", "CZECH", "DANCE", "DATE", "DAY", "DEATH", "DECK", "DEGREE", "DIAMOND", "DICE", "DINOSAUR", "DISEASE", "DOCTOR", "DOG", "DRAFT", "DRAGON", "DRESS", "DRILL", "DROP", "DUCK", "DWARF", "EAGLE", "EGYPT", "EMBASSY", "ENGINE", "ENGLAND", "EUROPE", "EYE", "FACE", "FAIR", "FALL", "FAN", "FENCE", "FIELD", "FIGHTER", "FIGURE", "FILE", "FILM", "FIRE", "FISH", "FLUTE", "FLY", "FOOT", "FORCE", "FOREST", "FORK", "FRANCE", "GAME", "GAS", "GENIUS", "GERMANY", "GHOST", "GIANT", "GLASS", "GLOVE", "GOLD", "GRACE", "GRASS", "GREECE", "GREEN", "GROUND", "HAM", "HAND", "HAWK", "HEAD", "HEART", "HELICOPTER", "HIMALAYAS", "HOLE", "HOLLYWOOD", "HONEY", "HOOD", "HOOK", "HORN", "HORSE", "HORSESHOE", "HOSPITAL", "HOTEL", "ICE", "ICE CREAM", "INDIA", "IRON", "IVORY", "JACK", "JAM", "JET", "JUPITER", "KANGAROO", "KETCHUP", "KEY", "KID", "KING", "KIWI", "KNIFE", "KNIGHT", "LAB", "LAP", "LASER", "LAWYER", "LEAD", "LEMON", "LEPRECHAUN", "LIFE", "LIGHT", "LIMOUSINE", "LINE", "LINK", "LION", "LITTER", "LOCH NESS", "LOCK", "LOG", "LONDON", "LUCK", "MAIL", "MAMMOTH", "MAPLE", "MARBLE", "MARCH", "MASS", "MATCH", "MERCURY", "MEXICO", "MICROSCOPE", "MILLIONAIRE", "MINE", "MINT", "MISSILE", "MODEL", "MOLE", "MOON", "MOSCOW", "MOUNT", "MOUSE", "MOUTH", "MUG", "NAIL", "NEEDLE", "NET", "NEW YORK", "NIGHT", "NINJA", "NOTE", "NOVEL", "NURSE", "NUT","OCTOPUS", "OIL", "OLIVE", "OLYMPUS", "OPERA", "ORANGE", "ORGAN", "PALM", "PAN", "PANTS", "PAPER", "PARACHUTE", "PARK", "PART", "PASS", "PASTE", "PENGUIN", "PHOENIX", "PIANO", "PIE", "PILOT", "PIN", "PIPE", "PIRATE", "PISTOL", "PIT", "PITCH", "PLANE", "PLASTIC", "PLATE", "PLATYPUS", "PLAY", "PLOT", "POINT", "POISON", "POLE", "POLICE", "POOL", "PORT", "POST", "POUND", "PRESS", "PRINCESS", "PUMPKIN", "PUPIL", "PYRAMID", "QUEEN", "RABBIT", "RACKET", "RAY", "REVOLUTION", "RING", "ROBIN", "ROBOT", "ROCK", "ROME", "ROOT", "ROSE", "ROULETTE", "ROUND", "ROW", "RULER", "SATELLITE", "SATURN", "SCALE", "SCHOOL", "SCIENTIST", "SCORPION", "SCREEN", "SCUBA DIVER", "SEAL", "SERVER", "SHADOW", "SHAKESPEARE", "SHARK", "SHIP", "SHOE", "SHOP", "SHOT", "SINK", "SKYSCRAPER", "SLIP", "SLUG", "SMUGGLER", "SNOW", "SNOWMAN", "SOCK", "SOLDIER", "SOUL", "SOUND", "SPACE", "SPELL", "SPIDER", "SPIKE", "SPINE", "SPOT", "SPRING", "SPY", "SQUARE", "STADIUM", "STAFF", "STAR", "STATE", "STICK", "STOCK", "STRAW", "STREAM", "STRIKE", "STRING", "SUB", "SUIT", "SUPERHERO", "SWING", "SWITCH", "TABLE", "TABLET", "TAG", "TAIL", "TAP", "TEACHER", "TELESCOPE", "TEMPLE", "THEATER", "THIEF", "THUMB", "TICK", "TIE", "TIME", "TOKYO", "TOOTH", "TORCH", "TOWER", "TRACK", "TRAIN", "TRIANGLE", "TRIP", "TRUNK", "TUBE", "TURKEY", "UNDERTAKER", "UNICORN", "VACUUM", "VAN", "VET", "WAKE", "WALL", "WAR", "WASHER", "WASHINGTON", "WATCH", "WATER", "WAVE", "WEB", "WELL", "WHALE", "WHIP", "WIND", "WITCH", "WORM", "YARD"
+Ace
+Alaska
+Anchor
+Ant
+Anthem
+Apron
+Armor
+Army
+Ash
+Astronaut
+Attic
+Avalanche
+Axe
+Baby
+Bacon
+Balloon
+Banana
+Barbecue
+Bass
+Bath
+Battle
+Battleship
+Bay
+Beam
+Bean
+Beard
+Bee
+Beer
+Bench
+Bicycle
+Big bang
+Big ben
+Bikini
+Biscuit
+Blacksmith
+Blade
+Blind
+Blizzard
+Blues
+Boil
+Bonsai
+Book
+Boss
+Bowl
+Bowler
+Boxer
+Brain
+Brass
+Brazil
+Bread
+Break
+Brick
+Bride
+Brother
+Bubble
+Bucket
+Bulb
+Bunk
+Butter
+Butterfly
+Cable
+Caesar
+Cake
+Camp
+Cane
+Captain
+Castle
+Cave
+Chain
+Chalk
+Cheese
+Cherry
+Chip
+Christmas
+Cleopatra
+Clock
+Cloud
+Coach
+Coast
+Coffee
+Collar
+Columbus
+Comb
+Comet
+Computer
+Cone
+Country
+Cow
+Cowboy
+Crab
+Craft
+Crow
+Crusader
+Crystal
+Cuckoo
+Curry
+Dash
+Delta
+Dentist
+Desk
+Director
+Disk
+Doll
+Dollar
+Door
+Drawing
+Dream
+Dressing
+Driver
+Drone
+Drum
+Dryer
+Dust
+Dwarf
+Ear
+Earth
+Earthquake
+Easter
+Eden
+Egg
+Einstein
+Elephant
+Farm
+Fever
+Fiddle
+Flag
+Flat
+Flood
+Floor
+Foam
+Fog
+Frog
+Frost
+Fuel
+Gangster
+Garden
+Gear
+Genie
+Glacier
+Glasses
+Goat
+Goldilocks
+Golf
+Governor
+Greenhouse
+Groom
+Guitar
+Gum
+Gymnast
+Hair
+Halloween
+Hamburger
+Hammer
+Hawaii
+Helmet
+Hercules
+Hide
+Hit
+Homer
+Hose
+House
+Ice age
+Iceland
+Igloo
+Ink
+Jail
+Jellyfish
+Jeweler
+Joan of arc
+Jockey
+Joker
+Judge
+Jumper
+Kick
+Kilt
+King arthur
+Kiss
+Kitchen
+Knot
+Kung fu
+Lace
+Ladder
+Laundry
+Leaf
+Leather
+Lemonade
+Letter
+Lightning
+Lip
+Locust
+Love
+Lumberjack
+Lunch
+Magazine
+Magician
+Makeup
+Manicure
+Map
+Maracas
+Marathon
+Mark
+Medic
+Memory
+Mess
+Meter
+Microwave
+Mile
+Milk
+Mill
+Minotaur
+Minute
+Mirror
+Miss
+Mohawk
+Mona lisa
+Monkey
+Moses
+Mosquito
+Mother
+Mountie
+Mud
+Mummy
+Musketeer
+Mustard
+Napoleon
+Nerve
+Newton
+Noah
+Nose
+Notre dame
+Nylon
+Oasis
+Onion
+Pacific
+Pad
+Paddle
+Page
+Paint
+Parade
+Parrot
+Patient
+Pea
+Peach
+Peanut
+Pearl
+Pen
+Penny
+Pentagon
+Pepper
+Pew
+Pig
+Pillow
+Pine
+Pitcher
+Pizza
+Pocket
+Polish
+Polo
+Pop
+Popcorn
+Potato
+Potter
+Powder
+Puppet
+Purse
+Quack
+Quarter
+Radio
+Rail
+Rainbow
+Ram
+Ranch
+Rat
+Razor
+Record
+Reindeer
+Rice
+Rifle
+Rip
+River
+Road
+Rodeo
+Roll
+Rope
+Rubber
+Russia
+Rust
+Sack
+Saddle
+Sahara
+Sail
+Salad
+Saloon
+Salsa
+Salt
+Sand
+Santa
+Saw
+Scarecrow
+Scratch
+Scroll
+Second
+Shampoo
+Shed
+Sheet
+Shell
+Sherlock
+Sherwood
+Shoot
+Shorts
+Shoulder
+Shower
+Sign
+Silk
+Sister
+Skates
+Ski
+Skull
+Sled
+Sleep
+Sling
+Slipper
+Sloth
+Smell
+Smoke
+Smoothie
+Snake
+Snap
+Soap
+Soup
+Sphinx
+Spirit
+Spoon
+Spray
+Spurs
+Squash
+Squirrel
+St.patrick
+Stable
+Stamp
+Steam
+Steel
+Step
+Stethoscope
+Sticker
+Storm
+Story
+Street
+Sugar
+Sumo
+Sun
+Swamp
+Sweat
+Sword
+Tank
+Taste
+Tattoo
+Tea
+Team
+Tear
+Texas
+Thunder
+Tiger
+Tin
+Tip
+Tipi
+Toast
+Tornado
+Trick
+Troll
+Tunnel
+Turtle
+Tutu
+Tuxedo
+University
+Valentine
+Vampire
+Venus
+Viking
+Violet
+Virus
+Volcano
+Volume
+Wagon
+Waitress
+Walrus
+Wedding
+Werewolf
+Wheel
+Wheelchair
+Whistle
+Window
+Wing
+Wish
+Wizard
+Wonderland
+Wood
+Wool
+Yellowstone
+Zombie
     ];
 
-    const gameBoard = document.getElementById('gameBoard');
-    let cards = [];
-    let showColors = false;
+    const gameBoard = document.getElementById('game-board');
+    const toggleSpy = document.getElementById('toggle-spy');
+    let showSpyMode = false;
 
     function generateCardDeck() {
       const shuffledWords = words.sort(() => Math.random() - 0.5);
@@ -98,14 +480,15 @@
           word: word,
           revealed: false
         };
+
         if (index < 9) {
-          card.color = 'red';
+          card.type = 'red';
         } else if (index < 18) {
-          card.color = 'blue';
-        } else if (index < 21) {
-          card.color = 'neutral';
+          card.type = 'blue';
+        } else if (index < 24) {
+          card.type = 'neutral';
         } else {
-          card.color = 'black';
+          card.type = 'black';
         }
 
         return card;
@@ -120,35 +503,27 @@
         const cardElement = document.createElement('div');
         cardElement.classList.add('card');
         cardElement.textContent = card.word;
-
-        if (showColors || card.revealed) {
-          cardElement.classList.add(card.color);
+        cardElement.onclick = () => {
+          if (card.revealed) return;
+          card.revealed = true;
           cardElement.classList.add('revealed');
+          cardElement.classList.add(card.type);
+        };
+       if (showColors) {
+          cardElement.classList.add(card.type);
         }
-
-        cardElement.addEventListener('click', () => {
-          if (!card.revealed) {
-            card.revealed = true;
-            renderGameBoard(cards, showColors);
-          }
-        });
 
         gameBoard.appendChild(cardElement);
       });
     }
 
-    function newGame() {
-      cards = generateCardDeck();
-      renderGameBoard(cards);
-      showColors = false;
-    }
+    let cards = generateCardDeck();
+    renderGameBoard(cards);
 
-    function toggleSpyMode() {
-      showColors = !showColors;
-      renderGameBoard(cards, showColors);
-    }
-
-    newGame();
+    toggleSpy.onclick = () => {
+      showSpyMode = !showSpyMode;
+      renderGameBoard(cards, showSpyMode);
+    };
   </script>
 </body>
 </html>
