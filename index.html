@@ -1,535 +1,224 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Codenames Duet</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-    }
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Codenames</title>
+        <meta charset="UTF-8">
+        <style>
+            /* Styles.css content */
+            /* Add the content of styles.css here */
+            @import url('https://fonts.googleapis.com/css2?family=Muli:wght@400;700&display=swap');
 
-    .game-board {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(5, 1fr);
-      grid-gap: 10px;
-      width: 600px;
-      margin: 20px auto;
-    }
+            * {
+                box-sizing: border-box;
+            }
 
-    .card {
-      background-color: #fff;
-      border-radius: 4px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      height: 100px;
-      font-size: 18px;
-      font-weight: bold;
-      position: relative;
-      transition: transform 0.2s;
-    }
+            body {
+                font-family: 'Muli', sans-serif;
+                background-repeat: no-repeat;
+                background-size: 100%;
+            }
 
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
-    }
+            h1 {
+                letter-spacing: 5px;
+                font-size: 30px;
+                margin-bottom: 25px;
+                color: #2B2D2F;
+            }
 
-    .card.revealed {
-      cursor: default;
-      transform: none;
-      box-shadow: none;
-    }
+            #game-view {
+                width: 825px;
+                text-align: center;
+                box-sizing: border-box;
+                justify-content: center;
+                margin: auto;
+            }
 
-    .card.red {
-      background-color: #f00;
-    }
+            #game-board {
+                background-color: rgba(255,255,255, 0.75);
+            }
 
-    .card.blue {
-      background-color: #00f;
-    }
+            #game-nav {
+                display: flex;
+                justify-content: space-between;
+                margin: 0 0 10px 0;
+                border-bottom: 3px solid #ED2939;
+                padding-bottom: 15px;
+                align-items: baseline;    
+            }
 
-    .card.neutral {
-      background-color: #ccc;
-    }
+            #bottom-nav{
+                display: flex;
+                justify-content: flex-end;
+                margin: 15px 0 25px 0;
+            }
 
-    .card.black {
-      background-color: #000;
-    }
-  </style>
-</head>
-<body>
-  <div id="gameBoard"></div>
-  <button id="toggleSpy">Toggle Spy Mode</button>
+            .button-game-control {
+                background-color: lightgray;
+                border: 2px solid gray;
+                border-radius: 3px;
+                color: #2B2D2F;
+                font: inherit;
+                padding: 5px 15px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 13px;
+            }
 
-  <script>
-    const words = [
-Ace
-Alaska
-Anchor
-Ant
-Anthem
-Apron
-Armor
-Army
-Ash
-Astronaut
-Attic
-Avalanche
-Axe
-Baby
-Bacon
-Balloon
-Banana
-Barbecue
-Bass
-Bath
-Battle
-Battleship
-Bay
-Beam
-Bean
-Beard
-Bee
-Beer
-Bench
-Bicycle
-Big bang
-Big ben
-Bikini
-Biscuit
-Blacksmith
-Blade
-Blind
-Blizzard
-Blues
-Boil
-Bonsai
-Book
-Boss
-Bowl
-Bowler
-Boxer
-Brain
-Brass
-Brazil
-Bread
-Break
-Brick
-Bride
-Brother
-Bubble
-Bucket
-Bulb
-Bunk
-Butter
-Butterfly
-Cable
-Caesar
-Cake
-Camp
-Cane
-Captain
-Castle
-Cave
-Chain
-Chalk
-Cheese
-Cherry
-Chip
-Christmas
-Cleopatra
-Clock
-Cloud
-Coach
-Coast
-Coffee
-Collar
-Columbus
-Comb
-Comet
-Computer
-Cone
-Country
-Cow
-Cowboy
-Crab
-Craft
-Crow
-Crusader
-Crystal
-Cuckoo
-Curry
-Dash
-Delta
-Dentist
-Desk
-Director
-Disk
-Doll
-Dollar
-Door
-Drawing
-Dream
-Dressing
-Driver
-Drone
-Drum
-Dryer
-Dust
-Dwarf
-Ear
-Earth
-Earthquake
-Easter
-Eden
-Egg
-Einstein
-Elephant
-Farm
-Fever
-Fiddle
-Flag
-Flat
-Flood
-Floor
-Foam
-Fog
-Frog
-Frost
-Fuel
-Gangster
-Garden
-Gear
-Genie
-Glacier
-Glasses
-Goat
-Goldilocks
-Golf
-Governor
-Greenhouse
-Groom
-Guitar
-Gum
-Gymnast
-Hair
-Halloween
-Hamburger
-Hammer
-Hawaii
-Helmet
-Hercules
-Hide
-Hit
-Homer
-Hose
-House
-Ice age
-Iceland
-Igloo
-Ink
-Jail
-Jellyfish
-Jeweler
-Joan of arc
-Jockey
-Joker
-Judge
-Jumper
-Kick
-Kilt
-King arthur
-Kiss
-Kitchen
-Knot
-Kung fu
-Lace
-Ladder
-Laundry
-Leaf
-Leather
-Lemonade
-Letter
-Lightning
-Lip
-Locust
-Love
-Lumberjack
-Lunch
-Magazine
-Magician
-Makeup
-Manicure
-Map
-Maracas
-Marathon
-Mark
-Medic
-Memory
-Mess
-Meter
-Microwave
-Mile
-Milk
-Mill
-Minotaur
-Minute
-Mirror
-Miss
-Mohawk
-Mona lisa
-Monkey
-Moses
-Mosquito
-Mother
-Mountie
-Mud
-Mummy
-Musketeer
-Mustard
-Napoleon
-Nerve
-Newton
-Noah
-Nose
-Notre dame
-Nylon
-Oasis
-Onion
-Pacific
-Pad
-Paddle
-Page
-Paint
-Parade
-Parrot
-Patient
-Pea
-Peach
-Peanut
-Pearl
-Pen
-Penny
-Pentagon
-Pepper
-Pew
-Pig
-Pillow
-Pine
-Pitcher
-Pizza
-Pocket
-Polish
-Polo
-Pop
-Popcorn
-Potato
-Potter
-Powder
-Puppet
-Purse
-Quack
-Quarter
-Radio
-Rail
-Rainbow
-Ram
-Ranch
-Rat
-Razor
-Record
-Reindeer
-Rice
-Rifle
-Rip
-River
-Road
-Rodeo
-Roll
-Rope
-Rubber
-Russia
-Rust
-Sack
-Saddle
-Sahara
-Sail
-Salad
-Saloon
-Salsa
-Salt
-Sand
-Santa
-Saw
-Scarecrow
-Scratch
-Scroll
-Second
-Shampoo
-Shed
-Sheet
-Shell
-Sherlock
-Sherwood
-Shoot
-Shorts
-Shoulder
-Shower
-Sign
-Silk
-Sister
-Skates
-Ski
-Skull
-Sled
-Sleep
-Sling
-Slipper
-Sloth
-Smell
-Smoke
-Smoothie
-Snake
-Snap
-Soap
-Soup
-Sphinx
-Spirit
-Spoon
-Spray
-Spurs
-Squash
-Squirrel
-St.patrick
-Stable
-Stamp
-Steam
-Steel
-Step
-Stethoscope
-Sticker
-Storm
-Story
-Street
-Sugar
-Sumo
-Sun
-Swamp
-Sweat
-Sword
-Tank
-Taste
-Tattoo
-Tea
-Team
-Tear
-Texas
-Thunder
-Tiger
-Tin
-Tip
-Tipi
-Toast
-Tornado
-Trick
-Troll
-Tunnel
-Turtle
-Tutu
-Tuxedo
-University
-Valentine
-Vampire
-Venus
-Viking
-Violet
-Virus
-Volcano
-Volume
-Wagon
-Waitress
-Walrus
-Wedding
-Werewolf
-Wheel
-Wheelchair
-Whistle
-Window
-Wing
-Wish
-Wizard
-Wonderland
-Wood
-Wool
-Yellowstone
-Zombie
+            #currentTurn {
+                font-size: 18px;
+            }
+
+            .redTurn {
+                color: #ED2939;
+                border-color: #ED2939;
+            }
+
+            .blueTurn {
+                color: #2076A1;
+                border-color: #2076A1 !important;
+            }
+
+            #score {
+                font-size: 20px;
+                padding-bottom: 10px;
+            }
+
+            .card-button {
+                border: none;
+                background: none;
+                padding: 0;
+                margin: 0;
+                font: inherit;
+                cursor: pointer;
+                width: 17%;
+                height: 5%;
+                justify-content: center;
+            }
+
+            .card {
+                background: #E2DCCD;
+                border: 2px solid gray;
+                border-radius: 3px;
+                line-height: 70px;
+                color:  #2B2D2F;
+                margin: 7px;
+                align-items: center;
+                box-sizing: border-box;
+                font-size: 16px;
+            }
+
+            .redCard {
+                border-color: #ED2939;
+                background-color: #ED2939;
+                color: #F5F5F5;
+            }
+
+            .blueCard {
+                border-color: #2076A1;
+                background-color: #2076A1;
+                color: #F5F5F5;
+            }
+
+            .neutralCard {
+                background-color: gray !important;
+                color: #F5F5F5;
+            }
+
+            .deathCard {
+                border-color: #2B2D2F;
+                background-color: #2B2D2F;
+                color: #F5F5F5;
+            }
+
+            .selectedCard {
+                box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.75);
+            }
+        </style>
+        <script>
+            // main.js content
+            // Add the content of main.js here
+            const game = {
+                currentTurn: 'red',
+                redScore: 0,
+                blueScore: 0,
+                cards: [],
+               init: function() {
+    this.cards = [
+        { word: "apple", team: "red", selected: false },
+        { word: "banana", team: "blue", selected: false },
+        { word: "cat", team: "red", selected: false },
+        { word: "dog", team: "blue", selected: false },
+        { word: "elephant", team: "red", selected: false },
+        { word: "frog", team: "blue", selected: false },
+        { word: "giraffe", team: "neutral", selected: false },
+        { word: "horse", team: "neutral", selected: false }
     ];
+                },
+                toggleTurn: function() {
+                    this.currentTurn = this.currentTurn === 'red' ? 'blue' : 'red';
+                    this.updateTurnDisplay();
+                },
+                updateTurnDisplay: function() {
+                    const currentTurnElement = document.getElementById("currentTurn");
+                    currentTurnElement.textContent = this.currentTurn.toUpperCase() + "'S TURN";
+                    currentTurnElement.classList.toggle("redTurn");
+                    currentTurnElement.classList.toggle("blueTurn");
+                },
+                updateScoreDisplay: function() {
+                    document.getElementById("redScore").textContent = "RED: " + this.redScore;
+                    document.getElementById("blueScore").textContent = "BLUE: " + this.blueScore;
+                },
+                cardClicked: function(index) {
+                    const card = this.cards[index];
+                    if (card.selected) return;
+                    card.selected = true;
+                    const cardElement = document.getElementById("card" + index);
+                    cardElement.classList.add(card.team + "Card");
+                    cardElement.classList.add("selectedCard");
+                    if (card.team === this.currentTurn) {
+                        this[currentTurn + "Score"]++;
+                        this.updateScoreDisplay();
+                    } else {
+                        this.toggleTurn();
+                    }
+                }
+            };
 
+            game.init();
 
-    const gameBoard = document.getElementById('gameBoard');
-    const toggleSpy = document.getElementById('toggleSpy');
-    let showSpyMode = false;
-
-    function generateCardDeck() {
-      const shuffledWords = words.sort(() => Math.random() - 0.5);
-      const deck = shuffledWords.slice(0, 25).map((word, index) => {
-        const card = {
-          word: word,
-          revealed: false,
-          type: ''
-        };
-
-        return card;
-      });
-
-      let cardTypes = ['blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue',
-                      'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red',
-                      'yellow', 'yellow', 'yellow', 'yellow', 'yellow',
-                      'black', 'black'];
-
-      cardTypes = cardTypes.sort(() => Math.random() - 0.5);
-      
-      for (let i = 0; i < deck.length; i++) {
-        deck[i].type = cardTypes[i];
-      }
-
-      return deck;
-    }
-
-    function renderGameBoard(cards, showColors = false) {
-      gameBoard.innerHTML = '';
-      cards.forEach((card, i) => {
-        const cardElement = document.createElement('div');
-        cardElement.className = 'card';
-        cardElement.innerText = card.word;
-
-        cardElement.onclick = () => {
-          if (card.revealed) return;
-          card.revealed = true;
-          cardElement.classList.add('revealed');
-          cardElement.classList.add(card.type);
-        };
-
-        if (showColors && showSpyMode) {
-          cardElement.classList.add(card.type);
-        }
-
-        gameBoard.appendChild(cardElement);
-      });
-    }
-
-    let cards = generateCardDeck();
-    renderGameBoard(cards);
-
-    toggleSpy.onclick = () => {
-      showSpyMode = !showSpyMode;
-      renderGameBoard(cards, showSpyMode);
-    };
-  </script>
-</body>
+            document.addEventListener("DOMContentLoaded", function() {
+                for (let i = 0; i < game.cards.length; i++) {
+                    const card = game.cards[i];
+                    const cardElement = document.createElement("button");
+                    cardElement.classList.add("card");
+                    cardElement.classList.add("card-button");
+                    cardElement.textContent = card.word;
+                    cardElement.setAttribute("id", "card" + i);
+                    cardElement.onclick = function() {
+                        game.cardClicked(i);
+                    };
+                    document.getElementById("game-board").appendChild(cardElement);
+                }
+                game.updateTurnDisplay();
+                game.updateScoreDisplay();
+            });
+        </script>
+    </head>
+    <body>
+        <div id="game-view">
+            <div id="game-nav">
+                <h1>Codenames</h1>
+                <span id="currentTurn" class="redTurn"></span>
+            </div>
+            <div id="score">
+                <span id="redScore">RED: 0</span> | <span id="blueScore">BLUE: 0</span>
+            </div>
+            <div id="game-board"></div>
+            <div id="bottom-nav">
+                <button id="resetBtn" class="button-game-control" onclick="game.init()">Reset</button>
+                <button id="endTurnBtn" class="button-game-control" onclick="game.toggleTurn()">End Turn</button>
+            </div>
+        </div>
+    </body>
 </html>
