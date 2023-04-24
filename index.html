@@ -63,8 +63,9 @@
   </style>
 </head>
 <body>
-  <div id="game-board" class="game-board"></div>
-  <button id="toggle-spy">Toggle Spy Mode</button>
+  <div id="gameBoard"></div>
+  <button id="toggleSpy">Toggle Spy Mode</button>
+
   <script>
     const words = [
 Ace
@@ -469,8 +470,8 @@ Yellowstone
 Zombie
     ];
 
-    const gameBoard = document.getElementById('game-board');
-    const toggleSpy = document.getElementById('toggle-spy');
+    const gameBoard = document.getElementById('gameBoard');
+    const toggleSpy = document.getElementById('toggleSpy');
     let showSpyMode = false;
 
     function generateCardDeck() {
@@ -478,14 +479,15 @@ Zombie
       const deck = shuffledWords.slice(0, 25).map((word, index) => {
         const card = {
           word: word,
-          revealed: false
+          revealed: false,
+          type: ''
         };
 
         if (index < 9) {
-          card.type = 'red';
-        } else if (index < 18) {
           card.type = 'blue';
-        } else if (index < 24) {
+        } else if (index < 18) {
+          card.type = 'red';
+        } else if (index < 21) {
           card.type = 'neutral';
         } else {
           card.type = 'black';
@@ -501,15 +503,17 @@ Zombie
       gameBoard.innerHTML = '';
       cards.forEach((card, i) => {
         const cardElement = document.createElement('div');
-        cardElement.classList.add('card');
-        cardElement.textContent = card.word;
+        cardElement.className = 'card';
+        cardElement.innerText = card.word;
+
         cardElement.onclick = () => {
           if (card.revealed) return;
           card.revealed = true;
           cardElement.classList.add('revealed');
           cardElement.classList.add(card.type);
         };
-       if (showColors) {
+
+        if (showColors) {
           cardElement.classList.add(card.type);
         }
 
