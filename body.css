@@ -1,0 +1,47 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f0f0;
+}
+
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.card {
+  background-color: #ccc;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.card.revealed {
+  cursor: default;
+}
+
+.card.blue {
+  background-color: #3399ff;
+}
+
+.card.red {
+  background-color: #ff3333;
+}
+
+.card.white {
+  background-color: #ffffff;
+}
+
+.card.black {
+  background-color: #000000;
+}
+
+#toggleSpyMode {
+  margin-top: 20px;
+}
