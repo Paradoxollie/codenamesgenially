@@ -470,6 +470,7 @@ Yellowstone
 Zombie
     ];
 
+
     const gameBoard = document.getElementById('gameBoard');
     const toggleSpy = document.getElementById('toggleSpy');
     let showSpyMode = false;
@@ -487,8 +488,8 @@ Zombie
           card.type = 'blue';
         } else if (index < 18) {
           card.type = 'red';
-        } else if (index < 21) {
-          card.type = 'neutral';
+        } else if (index < 23) {
+          card.type = 'yellow';
         } else {
           card.type = 'black';
         }
